@@ -1,0 +1,953 @@
+
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage[noae] {Sweave}
+\usepackage{amscd}
+\usepackage[tableposition=top]{caption}
+\usepackage{ifthen}
+\usepackage{color}
+\SweaveOpts{echo=FALSE}
+\usepackage[margin=0.75in]{geometry}              
+
+\usepackage[bookmarksnumbered,bookmarksopen,colorlinks,citecolor=blue,linkcolor=blue]{hyperref}
+\usepackage{natbib}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\title{Cost-Effectiveness of a Single Screen Using a Marker/Risk-model}
+\author{Hormuzd Katki and Ionut Bebu}
+%IDCRP\\
+%\texttt{ibebu@idcrp.org}}
+\maketitle
+%\tableofcontents
+
+\section{Introduction}
+Consider the problem of a 1-time screen for cancer or other outcome when a marker/risk-model is available. Each individual has a marker value or a risk score derived using a risk-model and the patient's characteristics. Individuals with high marker values or high risk scores are then tested for cancer. The problem is to identify an optimal cutoff value above which an individual needs to be tested for cancer. Notice that the lower the cutoff for the screening test is, the more likely a cancer case is detected (higher effectiveness), but also the higher the number of negative tests (higher costs). 
+
+Katki \cite{katki} proposed a new measure of evaluating the risk before and after incorporating the marker information(\href{http://analysistools.nci.nih.gov/biomarkerTools}{See the online MRS webtool.}). The mean risk stratification (MRS) is the average change in risk (postttest - pretest). Briefly, the approach is to quantify the value of marker $M$ to predict the outcome $D$ by $P(D+|M+) - P(D+)$ if $M+$, and by $P(D-|M-) - P(D-)$ if $M-$, which yields (on average)
+\begin{eqnarray}\label{MRS}
+MRS &=& [P(D+|M+) - P(D+)]\cdot P(M+) + [P(D-|M-) - P(D-)]\cdot P(M-)\\    \label{MRS2}
+    &=& 2[P(D+,M+) - P(D+)\cdot P(M+)]\,. 
+\end{eqnarray} 
+Here $M+$ denotes the event $M\geq m_0$, for some cutoff value $m_0$, while $M-$ denotes the event $M< m_0$.
+
+It follows from (\ref{MRS2}) that $MRS$ is simply twice the covariance of $D+$ and $M+$. Therefore $MRS$ is indeed a measure of association between the marker and the outcome, but it is not immediately clear how relevant it is if the goal is to find an optimal cutoff value $m_0$. 
+
+Katki \cite{katki} further show that 
+\begin{equation}\label{MRS_AUC}
+MRS=2J\cdot \pi(1-\pi)=4(AUC-0.5)\cdot \pi(1-\pi)\,,
+\end{equation}
+where $\pi=P(D+)$ and $J$ is Youden's index. However, notice that $\pi$ does not depend on the marker $M$, so that all three measures $MRS$, $AUC$ and $J$ are equivalent when it comes to choosing the marker cutoff value $m_0$. 
+
+
+\section{Defining costs and effectiveness for a single-time screen} 
+
+Alternatively, one can introduce a cost-effectiveness framework for this problem as follows.  By effectiveness we mean the dollar value of life-expectancy:
+\begin{enumerate}
+\item Let the effectiveness (life-expectancy) for a subject who does not develop cancer be $e_0$
+\item Let $e_1$ denote the effectiveness (life-expectancy) for a subject with a positive marker $M$ who then tests positive for cancer
+\item Let $e_2$ be the effectiveness (life-expectancy) for subject who is either not screened using the marker $M$ or is $M-$, but then develops cancer.
+\end{enumerate}
+Since the cancer cases identified using the marker $M+$ are diagnosed earlier, intuitively $e_1 \ge e_2$.  Otherwise, screening causes harm. 
+
+For costs:
+\begin{enumerate}
+\item Let $c_m$ denote the cost of marker evaluation
+\item Let $c_0$ denote the cost of the definite test for cancer, such as biopsy, which is perfect but is so invasive and costly that practically it cannot be done on everyone
+\item $c_1$ is the cost of treatment for a cancer case diagnosed early (i.e., tested positive for $M$)
+\item $c_2$ the treatment cost for a cancer case diagnosed late (i.e., either not screened with $M$ or tested negative for $M$)
+\end{enumerate}
+
+Now we consider the difference in costs and effectiveness of never screening versus a 1-time screen:
+\begin{enumerate}
+   \item{No screening for $M$. There are two possibilities:
+     \begin{enumerate}
+        \item{The individual has cancer ($D+$): cost is $c_0+c_2$ and effectiveness is $e_2$}
+        \item{The individual does not have cancer ($D-$): cost is 0, effectiveness is $e_0$.}
+     \end{enumerate}
+   }
+   \item{Screening for $M$. There are four possibilities:
+      \begin{enumerate}
+        \item{The screening is positive and the individual has cancer ($M+,D+$): cost is $c_m+c_0+c_1$ and effectiveness is $e_1$.}
+        \item{The screening is positive but the individual does not have cancer ($M+,D-$): cost is $c_m+c_0$ and effectiveness is $e_0$.}
+        \item{The screening is negative but the individual has cancer ($M-,D+$): cost is $c_m+c_0+c_2$ and effectiveness is $e_2$.}
+        \item{The screening is negative and the individual has not have cancer ($M-,D-$): cost is $c_m$ and effectiveness is $e_0$.}
+      \end{enumerate}  
+   }
+\end{enumerate}
+
+Let $C$ and $E$ denote the cost and effectiveness without screening, and $C_M$ and $E_M$ with screening. One has
+\begin{eqnarray*}
+{\cal E} (C) &=& (c_0+c_2)\cdot P(D+) \\
+{\cal E} (E) &=& e_2\cdot P(D+) + e_0\cdot P(D-) \\
+{\cal E} (C_M) &=& c_m + [1-P(D-,M-)]\cdot c_0+P(D+,M-)\cdot c_2+P(D+,M+)\cdot c_1\\
+{\cal E} (E_M) &=& e_0\cdot P(D-) + P(D+,M+)\cdot e_1 + P(D+,M-)\cdot e_2 \,,
+\end{eqnarray*}
+so that the differences in cost and effectiveness between the two scenarios are 
+\begin{eqnarray*}
+\Delta C &=& c_m + c_0\cdot P(M+) + (c_1 - c_2 - c_0)\cdot P(D+,M+)\\
+\Delta E &=& (e_1 - e_2)\cdot P(D+,M+)\,.
+\end{eqnarray*}
+One then selects $m_0$ based on both $\Delta C$ and $\Delta E$. Notice that $\Delta E$ is maximized when $m_0=-\infty$ (i.e., screen everybody). 
+
+There are 3 interesting properties of costs and effectiveness:
+\begin{enumerate}
+\item Costs and effectiveness depend on the relationship of disease and marker only through the joint probability $P(D+,M+)$. 
+\item Only the dollar-value of life-years gained $e_1-e_2$ requires specification.
+\item Only the difference of early vs. late treatment costs $c_1-c_2$ requires specification.  
+\end{enumerate}
+
+
+\section{Incremental Net Benefit (INB)}
+Usually the ICER is calculated, but this has disadvantages (see Appendix).  We prefer the INB:
+\begin{eqnarray} 
+  INB &=& \Delta E - \Delta C\\ \nonumber
+      &=& [(e_1-e_2)-(c_1-c_2-c_0)]P(D+,M+) - c_m - c_0P(M+)\\ \nonumber
+      &=& [e+c_0]P(D+,M+) - c_m - c_0P(M+), \label{eq:INB}
+\end{eqnarray}
+defining the net effectiveness of early intervention: $e = (e_1-e_2)-(c_1-c_2)$. The net effectiveness $e=(e_1-e_2)-(c_1-c_2)$ contrasts the dollar-value of the life-expectancy gain with dollar increase in treatment cost for early vs. late detection.  We presume that $e_1>e_2$, else screening is unethical.  If treatment costs for early vs. late detection are the same ($c_1=c_2$), then net effectiveness depends only only the value of the life-years gained.
+
+INB trades off the net effectiveness for the only group that benefits from screening ($D+$ and $M+$) versus the cost of the definitive cancer test done on everyone who tests positive.  Since the marker is applied to everyone, marker cost is a fixed constant.
+
+To clarify that $INB<0$ if $e<0$, we express INB as a function of PPV 
+\begin{eqnarray*} 
+  INB &=& P(M+)[e\cdot PPV - c_0(1-PPV)] - c_m.
+\end{eqnarray*}
+
+
+\section{Optimal cutoff threshold that maximizes INB}
+
+The optimal threshold that maximizes INB is easy to calculate.  Let $M$ be an unbiased risk-model: 
+\begin{equation}\label{risk_model}
+P(D+|M=m) = m  \,.
+\end{equation}
+Let $f_M$ denote the density of $M$, and denote the cutoff threshold $m_0$, so that
+\begin{eqnarray} \nonumber
+P(M+) &=& \int_{m_0}^\infty f_M(m)\,dm\\  \label{expressions}
+P(D+,M+) &=& \int_{m_0}^\infty P(D+|M=m)\cdot f_M(m)\,dm\\   \nonumber
+         &=& \int_{m_0}^\infty m\cdot f_M(m)\,dm\,.
+\end{eqnarray}
+INB can be writen as 
+\begin{equation}\label{INB2}
+INB=(e+c_0)\cdot \int_{m_0}^\infty m\cdot f_M(m)\,dm - c_0\cdot \int_{m_0}^\infty f_M(m)\,dm - c_m\,.
+\end{equation}
+Taking the derivative with respect to $m_0$ and setting it to zero yields
+\[-(e+c_0)\cdot m_0\cdot f_M(m_0) + c_0\cdot f_M(m_0) =0\,, \]
+Denoting $m_0$ as $\pi_{INB}$ where INB is maximized:
+\begin{eqnarray}
+  m_0 = \frac{c_0}{e+c_0} = \pi_{INB} 
+\end{eqnarray}
+This $\pi_{INB}$ is the optimal risk threshold to maximize INB.  
+
+Note that $\pi_{INB}$ does not require anything about test performance. It only requires the utilities: definitive test cost $c_0$ and the net effectiveness of early intervention $e=(e_1-e_2)-(c_1-c_2)$.  None of the objective aspects of the problem matter, like disease prevalence, etc.  This is unlike MRS, Youden's index, AUC, Vickers's Net Benefit gain, which are all maximized at risk threshold equals disease prevalence, regardless of your utilities.
+
+Note that the optimal risk threshold $\pi_{INB}$ doesn't require specifying marker cost $c_m$, because considering risk thresholds requires having the marker test already conducted, and thus it is a sunk cost.
+
+The optimal threshold can also be derived from the classical risk-threshold framework (see Appendix).
+
+\subsection{Optimal screening versus screening no one and versus testing everyone}
+To be sure that $\pi_{INB}$ maximizes INB, you have check the INB that this provides versus the boundaries: INB for screening no one  or everyone.  The INB for screening no one is 0 by definition and the INB for testing everyone is $INB=(e+c_0)P(D+)-c_0$. These boundary cases could be calculated by the INB equation~\ref{eq:INB}, but you have to set $c_m=0$ because for the bounday cases, screening is unnecessary.  Because the optimal threshold $\pi_{INB}$ also doesn't require $c_m$, then one could set $c_m=0$ in the INB equation~\ref{eq:INB} and you would know which option (screen no one, test everyone, only screen those with risk greater than $\pi_{INB}$) is best.  The value of knowing $c_m$ is only to know if INB for optimal screening is positive or negative. 
+
+Note that the net effectiveness of early intervention must achieve some minimal value for screening to be better than screening no one.  However, if treatments are too good (i.e. treatment is very effective and very cheap), then everyone should be tested. Thus for screening to be better than screening no one or testing everyone, the net effectiveness must be bounded (see Appendix):
+\begin{eqnarray*}
+  \frac{1}{PPV}\left[\frac{c_m}{P(M+)}+c_0(1-PPV)\right] < e < \frac{1}{1-NPV}\left[c_0\cdot NPV - \frac{c_m}{P(M-)}\right]. 
+\end{eqnarray*}
+This might provides a sensitivity analysis for newly discovered markers, where net effectiveness $e$ is not known, but marker cost $c_m$, definitive test cost $c_0$, and marker PPV/NPV/positivity are known.  
+
+
+\section{Example: single CT lung-cancer screen}
+
+The eligible population for lung-cancer screening is you must be ages 55-80, smoked at least 30 pack-years, and cannot have quit for more than 15 years.  We will assume this population is fixed, as all the data is based on this population anyway.  The question is then, what is the cost-effectiveness of a single CT lung-cancer screen.
+
+To estimate effectiveness, we need to know the the life-expectancy in this population, with and without a single screen.  $e_1$ is the life-expectancy for someone whose cancer is detected by CT and $e_2$ is the life-expectancy if the cancer is not detected by CT (in dollar value). Without dollar value, the years-gained by Bill Black's NEJM paper is roughly $e_1-e_2=8.4792-6.8479=1.6313$.  That is for 3 screens, let's assume for 1 screen that life-years gained is $1.6313/3=0.54377$.  At \$100,000 value per life year, this is
+\begin{eqnarray*}
+e_1-e_2 &=& 0.54377\times\$100,000 = \$54,377
+\end{eqnarray*}
+(Notes for Hormuzd: This $e_1-e_2$ metric of years-gained among those with cancer, we had decided was the most meaningful in Li's life-gained paper.  This may only be life-years gained only within the trial, Li can calculate what this for a life-time, so it should be much bigger (although Li's paper estimates only 1.53 years-gained per lung cancer detected for USPSTF-eligibles).) 
+
+% The below text is wrong: effectiveness e_1 is life-years gained for someone with early-detected cancer
+% We have developed a calculator for life-expectancy gain for ever-smokers from a 3-screen program.  
+% We estimate the life-gained to be an average of 16.2 days over your lifetime.  This is a typically pathetic benefit of cancer screening.  But that is for 3 screens, perhaps for 1 screen we can divide by 3 so we have something like 5.4 extra days of life from a single CT screen.  Setting the dollar-value of each life-year gained as \$100,000 per year (\$274 per day), effectiveness is
+% \begin{eqnarray*}
+% e_1-e_2 &=& 5.4\times\$274 = \$1,480
+% \end{eqnarray*}
+% (Note for Hormuzd:  Bill Black's paper estimates life-days gained in NLST as $(14.7386-14.7071)*365=11.5$ days.)
+
+For costs, $c_m$ is the cost of a CT screen.  By Bill Black's NEJM paper, the screen is \$1,130 and work-up is \$835 for a total of $c_m=\$1,965$.
+
+$c_0$ is the cost of the definitivly diagnosing lung cancer.  If this is a bronchoscopy with biopsy, Bill Black's paper gives lots of costs for different ways to do this, but this is about \$500.
+
+$c_1$ is the cost of treating lung cancer found during screening and $c_2$ is the cost of treating lung cancer when there is no screening.  By Bill Black's paper, it looks like treatment cost under screening is $c_1=\$8,461$ and for no screening $c_2=\$7,835$, so $c_1-c_2=\$625$  (Note for Hormuzd: These treatment costs seem way too low.)
+
+% Treatment costs estimate from Bill Black's paper
+% I think Bill Black's treatment cost estimate of $1106 and $931 in table 2 is per the whole 53502 cohort.
+% I'm not sure how to get this down to a treatment cost per cancer for CT vs. CXR.
+% CT arm:  Total costs over trial (6.5 years/person) per year is $1106*53502/6.5 then divide by 1076 cancers for cost/cancer
+% > 1106*53502/1076/6.5
+% [1] 8460.568
+% CXR arm:  Total costs over trial (6.5 years/person) per year is $931*53502/6.5 then divide by 978 cancers for cost/cancer
+% > 931*53502/978/6.5
+% [1] 7835.514
+% Thus c_1=$8461 and c_2=$7836, difference of $625
+
+% Thus we have for Costs:
+% \begin{eqnarray*}
+%   c_m &=& \$1,965 \\
+%   c_0 &=& \$500 \\
+%   c_1 &=& \$8,461 \\
+%   c_2 &=& \$7,835. \\
+% \end{eqnarray*}
+
+Thus $e=(e_1-e_2)-(c_1-c_2)=\$54,377-\$625=\$53,752$.  Note that $e$ is insensitive to the costs, but is very sensitive to dollar valuation of life-years gained.
+
+<<INB for single-time CT lung-cancer screen>>=
+# Effectiveness and costs from Bill Black's NEJM paper
+LYG <- (8.4792-6.8479)/3 # = e_1-e_2
+treatmentcostdiff <- 28195-24192 #27385-25379 # = c_1-c_2
+dollarsperLYG <- 1e5 #1.53176375e5
+e <- LYG*dollarsperLYG - treatmentcostdiff # = net effectiveness of early intervention
+c0 <- 500 # = c_0, cost of definitive test for lung cancer
+cm <- 404+298 # = c_m, cost of single CT screen plus workup cost
+piINB <- c0/(e+c0) # = cost-effective optimal risk-threshold
+
+# CT screen characteristics from Tim Church's NEJM paper
+sens <-273/292 ; pi <- 292/26382 ; p <- 7212/26382 ; PPV <- 273/7212 ; truepos <- sens*pi ; 
+spec <- 19151/26090 ; NPV <- spec*(1-pi)/(1-p)
+
+# Calculate INB and critical dollars per LYG to have positive INB
+INB <- (e+c0)*truepos - cm - c0*p
+dollarsperLYG.critical1 <- ( (cm + c0*p)/truepos - c0 + treatmentcostdiff ) / LYG
+print(paste("INB = $",INB,", minimum dollars per LYG to have positive INB = $",dollarsperLYG.critical1))
+dollarsperLYG.critical2 <- ( c0*(1-p)/truepos-cm + treatmentcostdiff ) / LYG
+print(paste("INB = $",INB,", maximum dollars per LYG before we should test everyone = $",dollarsperLYG.critical2))
+print(paste("cost-effective optimal risk-threshold = ",piINB))
+print(paste("net effectiveness of early intervention e = $",e))
+
+# Compare NLST criteria to Lung-RADS
+# Use Paul Pinsky's Table 4 for numbers, which is not the NLST paper, but this is not a self-consistent 2x2 table
+# I'm going to keep the margins for NLST and Lung-RADS fixed as the denominators in Table 4
+# For the interior of the table, I will keep the D+,M+ cell as he reports (248 for Lung-RADS,), and calculate the rest
+# Lung-RADS:    M+    M-
+#          D+  248    44    292
+#          D- 3343 22747  26090
+#             3591 22791  26382
+# For NLST, I keep the interior (273,19,6939) and n=26382.  The M- margin is forced to be 19170 and thus D-,M- must be 19151
+# NLST:    M+    M-
+#     D+  273    19    292
+#     D- 6939 19151  26090
+#        7212 19170  26382
+NLSTsens <- 273/292 ; NLSTspec <- 19151/26090 ; NLSTPPV <- 273/7212 ; NLSTpi <- 292/26382 ; NLSTp <- 7212/26382  
+RADSsens <- 248/292 ; RADSspec <- 22747/26090 ; RADSPPV <- 248/3591 ; RADSpi <- 292/26382 ; RADSp <- 3591/26382  
+
+NLST.INB <- (e+c0)*NLSTsens*NLSTpi - cm - c0*NLSTp
+RADS.INB <- (e+c0)*RADSsens*RADSpi - cm - c0*RADSp
+print(paste("INB for NLST vs Lung-RADS is:",NLST.INB,RADS.INB, ", difference=",NLST.INB-RADS.INB))
+
+# criteria for better performance; use the specificity version since Lung-RADS has better specificity
+Lorenz.slope <- (RADSspec-NLSTspec) / ( (1-RADSp) - (1-NLSTp) )
+critical <- (1-piINB)/(1-NLSTpi) # NLSTpi=RADSpi so we have consistency
+print(paste("Lorenz.slope =",Lorenz.slope,"must be greater than",critical,"for Lung-RADS to have better INB than NLST"))
+# Same critera but on the sensitivity scale, so NLST is the test with better sensitivity
+Lorenz.slope <- (NLSTsens-RADSsens) / (NLSTp-RADSp)
+critical <- piINB/NLSTpi # NLSTpi=RADSpi so we have consistency
+print(paste("Lorenz.slope =",Lorenz.slope,"must be greater than",critical,"for NLST to have better INB than Lung-RADS"))
+@
+
+The INB is $(e+c_0)P(D+,M+)-c_m-c_0P(M+)$.  CHECK ALL THAT FOLLOWS IT MIGHT BE WRONG The Church NEJM paper reports $P(M+)=27.3\%$, $P(D+)=1.1\%$, and I calculate $P(D+,M+)=sens*pi=93.8\%*1.093\%=1.025\%$.  The INB is $53752*0.01028-1965-500*0.273=-\$1,549$.  This is negative, which means screening should not be done (because INB for no screening is by definition zero, and INB for bronchoscoping everyone is $53752*0.011-500=\$91.27$ which is, uh oh, positive.)
+
+Note that the optimal risk-threshold for a CT screen is $\pi_{INB}=500/(500+53,752)=0.92\%$ lung-cancer risk.  In comparison, by the Church NEJM paper, the 1st screen PPV  was 3.8\%, so the implicit NLST risk threshold was even lower than 3.8\%.  Perhaps it could be around 0.91\%, since average risk is probably much bigger than the minimum risk threshold. 
+
+However, we can change the dollar valuation of life-years gained to see what is required for screening to be cost-effective.  Note that $INB>0$ iff $(e+c_0)P(D+,M+)>c_m+c_0P(M+)=\$2,102$ CHECK ALL THAT FOLLOWS IT MIGHT BE WRONG  and thus $e>\$204,426$.  To achieve this $e$, we require a factor of $204,551/54,377=3.76172$, a valuation of \$376,172 per life-year gained.  At this $e$, the optimal threshold for declaring CT-positivity is $\pi_{INB}=0.24\%$.
+
+
+
+
+
+
+\section{Example: Application to deciding who should undergo \textit{BRCA1/2} genetic testing}
+
+We previously applied MRS to the controversy over who should get tested for mutations in the \textit{BRCA1/2} genes, which cause high risks of breast and ovarian cancer~\citep{katki}.  The mutations are rare in the general population ($\approx0.25\%$), but are 10 times more common among Ashkenazi-Jews~\citep{STRUEWING1997}.  Currently, according to the UK National Institute for Health and Care Excellence (NICE) and the US Preventive Services Task Force, women are referred for mutation testing only if they have a strong family history of breast or ovarian cancer~\citep{Moyer2014} as quantified by a risk model calculating that their risk of carrying a mutation exceeds 10\%~\citep{NICE2017}.  However, as mutation-testing costs fall, prominent voices have called for testing \textit{all} women~\citep{King2014,GenomeWeb2017}.  \textit{BRCA1/2} testing is already being offered to a large unselected Canadian population as a demonstration project~\citep{GenomeWeb2017a}.  Testing all women would strain clinical resources by testing millions of women, $99.75\%$ of whom will test negative.  At US \$500-\$1,000 per test, testing millions of women has clear commercial implications.  
+
+In contrast, we recently demonstrated that 80\% of Ashkenazi-Jewish mutation-carriers could be identified by testing only 44\% of Ashkenazi-Jewish women~\citep{Best2017}.  This is achieved by a low mutation-risk threshold of 0.78\%, far lower than the current 10\% UK NICE and US recommendation.   However, we could not formally justify any choice of risk-threshold.  To better understand the implications of different choices of risk threshold, we previously considered multiple metrics, including AUC, Net Benefit, and MRS/NBI \citep{katki}.  We showed that risk thresholds between 0.78\% to 5.0\% maximized the MRS ($\approx 1.7\%$) for Ashkenazi-Jewish women, and for the general population, thresholds between 0.07\% to 0.56\% maximized the MRS ($\approx 0.18\%$)~\citep{katki}.  Here we compare risk thresholds that maximize MRS to risk thresholds that maximize the INB.
+
+We use data on 4,589 volunteers (102 \textit{BRCA1/2} mutation carriers) from the Washington Ashkenazi Study (WAS)~\citep{STRUEWING1997}.  We calculated each volunteer's risk of carrying a mutation, based on their self-reported family-history of breast/ovarian cancers, using the BRCAPRO risk model~\citep{Parmigiani1998}.  Here $M$ is the BRCAPRO risk score, and because BRCAPRO is a well-calibrated risk model~\citep{Best2017}, $m_0=R$, i.e. the cutpoint $m_0$ equals the risk threshold $R$. Disease $D$ indicates the presence of a \textit{BRCA1/2} mutation.
+
+\subsection{Costs and Effectiveness of \textit{BRCA1/2} genetic testing, preventive interventions, and cancer treatments}
+
+Let us redefine Effectiveness as the dollar value of the life-years gained by undergoing genetic testing.  Let us presume that  women without mutations have a normal lifespan of age 80.  \textit{BRCA1/2} mutation-carriers have 5.7 fewer years of expected life~\citep{mai}, so we set their life-expectancy to age 74.  
+
+If mutation-carriers get genetic testing, they will act to reduce their cancer risks.  Most mutation-carriers undergo oophorectomy, the removal of ovaries.  Some also choose to have mastectomy, the removal of breasts.  These surgeries reduce cancer risk drastically, but not entirely; there is typically a 10\% chance that cancer occurs in each organ anyway.  These women also undergo frequent screening, and if cancer is found early, hopefully treatment is more effective.  I don't know what their life-expectancy is, but let me set it as age 78.
+
+I set the dollar-value of each life-year gained as \$100,000 per year.  Thus Effectiveness is
+\begin{eqnarray*}
+e_1-e_2 &=& (78-74)\times\$100,000 = \$400,000
+\end{eqnarray*}
+
+For costs, $c_m$ is the cost of using the BRCAPRO risk model.  This is very low-cost, but you need to come to the doctor's office, your family history has to be elicited, it takes time.  I will set it to the cost of a doctor's visit, say \$100.
+
+$c_0$ is the cost of the BRCA genetic test.  Prices are falling, it is now about \$1,000.
+
+$c_1$ is the cost of interventions for BRCA mutation carrier found by screening.  Generally they will undergo risk-reducting interventions, at least oophorectomy and perhaps also mastectomy, and then frequent lifetime cancer screening.  But cancer can still occur, and those 25\% (\textcolor{blue}{\it should this be related to the 10\% mentioned above?}) who still get cancer incur cancer treatment costs.  For $c_2$, this is the cost of cancer treatment for mutation carriers who are not found until cancer is diagnosed.  All of them will require full cancer treatment.  I don't know how to specify $c_1,c_2$.  Let me set them both equal to \$100,000 for now.
+
+Thus we have for Costs:
+\begin{eqnarray*}
+  c_m &=& \$100 \\
+  c_0 &=& \$1,000 \\
+  c_1 &=& \$100,000 \\
+  c_2 &=& \$100,000. \\
+\end{eqnarray*}
+
+%At a future time, it may be worth decomposing $c_1$ into the cost for the risk-reducing interventions that everyone
+
+\subsection{MRS vs. INB for \textit{BRCA1/2} genetic testing}
+
+<<INBcomputations>>=
+##
+# Plot MRS and INB for WAS data
+# HKatki 10 7 16
+##
+
+##
+# Read excel sheet of all BRCA information. Each row is a risk-threshold: sens, spec, PPV, NPV, MRS, etc. 
+##
+library(readxl)
+brca <- as.data.frame(read_excel("/Users/katkih/hkCurrent/Dropbox/RiskStratification/MRS/BRCA/data/BRCA.xlsx", "Thresholds"))
+brcaGenPop <- as.data.frame(read_excel("/Users/katkih/hkCurrent/Dropbox/RiskStratification/MRS/BRCA/data/GenPop/BRCA_GenPop.xlsx"))
+
+# brca <- as.data.frame(read_excel("E://Staff/Ionut Bebu/METHODS/Optimal_Screening/Screening_Hormuzd/DATA/BRCA.xlsx", "Thresholds"))
+# brcaGenPop <- as.data.frame(read_excel("E://Staff/Ionut Bebu/METHODS/Optimal_Screening/Screening_Hormuzd/DATA/BRCA_GenPop.xlsx"))
+
+##
+# Function to calculate deltas for Cost and Effectiveness, and Incremental Net Benefit (INB)
+##
+INB <- function(E,C,probDplusMplus,probMplus) {
+  delE <- (E[2]-E[3])*probDplusMplus
+  delC <- C[1] + C[2]*probMplus + (C[3]-C[4]-C[2])*probDplusMplus
+  INB <- delE - delC
+  all <- cbind(delE,delC,INB)
+}    
+
+##
+# Fix effectiveness and costs
+##
+E <- c(80,78,74)*1e5 # $100,000 per year of life
+C <- c(1e2,1e3,1e5,1e5) # BRCAPRO test cost, BRCA test cost, cost of prevention & early treatment, cost of late treatment
+
+# Risk threshold that maximizes INB 
+INBmaxat <- C[2]/((E[2]-E[3]) - (C[3]-C[4]-C[2]))
+
+##
+# Calculate costs and effectivenesses for Ashkenazi-Jews
+##
+probDplusMplus <- brca$MRS/2 + brca$OverallPtest*brca$BRCAprev
+allAJ <- data.frame(brca$Threshold,brca$MRS,INB(E,C,probDplusMplus,brca$OverallPtest))
+colnames(allAJ)[1:2] <- c("Threshold","MRS")
+
+##
+# Calculate costs and effectivenesses for General-Population
+##
+probDplusMplus <- brcaGenPop$MRS/2 + brcaGenPop$OverallPtest*brcaGenPop$BRCAprev
+allGenPop <- data.frame(brcaGenPop$Threshold,brcaGenPop$MRS,INB(E,C,probDplusMplus,brcaGenPop$OverallPtest))
+colnames(allGenPop)[1:2] <- c("Threshold","MRS")
+@
+
+\begin{figure}
+\begin{center}
+<<label=MRS_INB,fig=TRUE,echo=FALSE>>=
+# Make 4 plots, 2 for Ashkenazi-Jews (first row), 2 for General Population (second row)
+# In each row: Plot deltas of cost and effectiveness vs. threshold, then plot MRS and INB vs. threshold
+par(mfrow=c(2,2))
+par(mar=c(3,2,2,4)+0.1,mgp=c(2.2,1,0))
+
+##
+# First row of plots is for Ashkenazi-Jews
+##
+
+##
+# Put delta Cost and delta Effectiveness on one plot
+##
+plot(allAJ$Threshold,allAJ$delE,type="l",col="red",log="x",yaxt="n",xaxt="n",xlab="Threshold",ylab="",main="Ashkenazi-Jews")#,xlim=c(0.002,0.95))#,ylim=c(0,0.018))
+axis(4,col="red")
+mtext("delta Effectiveness",side=4,line=2,col="red")
+abline(v=brca$BRCAprev[10],lty=2)
+# text(brca$BRCAprev[10]-.0012,0.0002+.00003,"BRCA1/2 mutation",cex=0.6,adj=c(1,0))
+# text(brca$BRCAprev[10]-.0012,0.0002-.00003,"prevalence",cex=0.6,adj=c(1,1))
+# delta Cost 
+par(new=TRUE)
+plot(allAJ$Threshold,allAJ$delC,type="l",col="blue",log="x",yaxt="n",xlab="",ylab="")#,xlim=c(0.002,0.95))#,ylim=c(0,0.01))
+axis(2,col="blue")
+mtext("delta Cost",side=2,line=2,col="blue")
+legend("topright",col=rev(c("red","blue")),lty=1,legend=rev(c("delta Effective","delta Cost")),bty="n",cex=0.8)
+
+##
+# Put MRS and INB on one plot
+##
+plot(allAJ$Threshold,allAJ$MRS,type="l",col="red",log="x",yaxt="n",xaxt="n",xlab="Threshold",ylab="",main="Ashkenazi-Jews")#,xlim=c(0.002,0.95),ylim=c(0,0.018))
+axis(4,col="red")
+mtext("Mean Risk Stratification (MRS)",side=4,line=2,col="red")
+abline(v=brca$BRCAprev[10],lty=2)
+# text(brca$BRCAprev[10]-.0012,0.0002+.00003,"BRCA1/2 mutation",cex=0.6,adj=c(1,0))
+# text(brca$BRCAprev[10]-.0012,0.0002-.00003,"prevalence",cex=0.6,adj=c(1,1))
+# where is INB maximized at
+abline(v=INBmaxat,lty=3)
+text(INBmaxat+.000012,0.0002+.00003,"max INB",cex=0.6,adj=c(0,0))
+# INB 
+par(new=TRUE)
+plot(allAJ$Threshold,allAJ$INB,type="l",col="blue",log="x",yaxt="n",xlab="",ylab="")#,xlim=c(0.002,0.95))#,ylim=c(0,0.01))
+axis(2,col="blue")
+mtext("INB",side=2,line=2,col="blue")
+legend("topright",col=rev(c("red","blue")),lty=1,legend=rev(c("MRS","INB")),bty="n",cex=0.8)
+
+
+
+##
+# Second row of plots is for General-Population
+##
+
+##
+# Put delta Cost and delta Effectiveness on one plot
+##
+plot(allGenPop$Threshold,allGenPop$delE,type="l",col="red",log="x",yaxt="n",xaxt="n",xlab="Threshold",ylab="",main="General Population")#,xlim=c(0.0002,0.95))#,ylim=c(0,0.018))
+axis(4,col="red")
+mtext("delta Effectiveness",side=4,line=2,col="red")
+abline(v=brcaGenPop$BRCAprev[10],lty=2)
+# text(brcaGenPop$BRCAprev[10]+.00012,0.00002+.000003,"BRCA1/2 mutation",cex=0.6,adj=c(0,0))
+# text(brcaGenPop$BRCAprev[10]+.00012,0.00002-.000003,"prevalence",cex=0.6,adj=c(0,1))
+# delta Cost 
+par(new=TRUE)
+plot(allGenPop$Threshold,allGenPop$delC,type="l",col="blue",log="x",yaxt="n",xlab="",ylab="")#,xlim=c(0.0002,0.95))#,ylim=c(0,0.01))
+axis(2,col="blue")
+mtext("delta Cost",side=2,line=2,col="blue")
+legend("topright",col=rev(c("red","blue")),lty=1,legend=rev(c("delta Effective","delta Cost")),bty="n",cex=0.8)
+
+##
+# Put MRS and INB on one plot
+##
+plot(allGenPop$Threshold,allGenPop$MRS,type="l",col="red",log="x",yaxt="n",xaxt="n",xlab="Threshold",ylab="",main="General Population")#,xlim=c(0.0002,0.95))#,ylim=c(0,0.018))
+axis(4,col="red")
+mtext("Mean Risk Stratification (MRS)",side=4,line=2,col="red")
+abline(v=brcaGenPop$BRCAprev[10],lty=2)
+# text(brcaGenPop$BRCAprev[10]+.00012,0.00002+.000003,"BRCA1/2 mutation",cex=0.6,adj=c(0,0))
+# text(brcaGenPop$BRCAprev[10]+.00012,0.00002-.000003,"prevalence",cex=0.6,adj=c(0,1))
+# where is INB maximized at
+abline(v=INBmaxat,lty=3)
+text(INBmaxat+.000012,0.0002+.00003,"max INB",cex=0.6,adj=c(0,0))
+# INB
+par(new=TRUE)
+plot(allGenPop$Threshold,allGenPop$INB,type="l",col="blue",log="x",yaxt="n",xlab="",ylab="")#,xlim=c(0.0002,0.95))#,ylim=c(0,0.01))
+axis(2,col="blue")
+mtext("INB",side=2,line=2,col="blue")
+legend("topright",col=rev(c("red","blue")),lty=1,legend=rev(c("MRS","INB")),bty="n",cex=0.8)
+@
+\end{center}
+\label{fig:two}
+\caption{Effectiveness, cost, MRS and INB as a function of the cutoff Threshold values $m_0$.  The marker is the BRCAPRO model score (cutoff at thresholds $m_0$), the confirmatory test is the BRCA genetic test itself.  The outcome $D+$ is having a BRCA mutation.  Costs $c_1$ and $c_2$ include risk-reducing interventions for the found BRCA mutation carriers, and cost of future cancer treatments. Effectiveness is the dollar value of the the life-years gained by early intervention.  First row is for Ashkenazi-Jews, second row is for general population.  Dashed line is where threshold equals mutation prevalence (2.3\% for Ashkenazi-Jews, 0.26\% for general population).  Dotted line is the risk threshold that maximizes INB which is $\pi_{INB}$}
+\end{figure}
+
+Figure 2 (left panels) show the increase in effectiveness and costs due to genetic testing for both Ashkenazi-Jews and the general population, as a function of the BRCAPRO risk threshold to offer women genetic testing.  When the threshold is low, most everyone is offered testing.  The cost is highest here, and decreases down to only marker testing cost (i.e. BRCAPRO risk model cost) if no one is offered genetic testing.  Effectiveness is also highest if everyone is tested for mutations, and goes down to zero if no one is.  Note that while the cost scale (y-axes) are the same, the effectiveness scale (right-axes) is about 10 times higher for Ashkenazi-Jews.  This reflects that mutations are 10 times more common for Ashkenazi-Jews.  
+
+(Parenthetically, note that in the limits of testing no one or testing everyone, I should subtract out marker cost $c_m$ because the marker is unnecessary.  The limits of the INB curve don't equal the correct limits.  I should probably add two points on the figures for the INBs of testing everyone or no one.)
+
+Figure 2 (right panels) compare the MRS to INB.  MRS is zero if no one, or everyone, gets mutation testing, and always peaks at threshold equals prevalence (dotted line).  INB for Ashkenazi-Jews is highest at a threshold of zero, meaning everyone should get testing  This happens because the of the high value attached to each life-year gained, and Ashkenazi-Jews are much more likely to gain this benefit.  For the general population, note that $INB<0$ for the lowest risk thresholds and for risk thresholds greater than 10\% (recall that 10\% is the current official threshold in the US and UK.).  These are thresholds where net harm would be done to the population.  
+
+Importantly, for the general population, the INB curve is proportional to the MRS curve (i.e. the curves overlap, but note the very different scales on the left-axis and right-axis).  Thus INB and MRS are maximized at the same risk-threshold and give the same answer.  The next section shows that this happens because the costs and effectiveness balance each other in a special way.
+
+Figure 2, dotted line, is the optimal risk threshold cutoff for INB, $R=\pi_{INB}=0.25\%$.  For the general population, this coincides with disease prevalence, and thus $INB\propto MRS$ so they are maximized at the same risk threshold.  For Ashkenazi-Jews, $R=\pi_{INB}=0.25\%$ is to left of prevalence $\pi=2.5\%$, which tests 85\% of Ashkenazi-Jews to find 96\% of BRCA mutation carriers.  The INB at 0.25\% is about \$7,800. INB for testing everyone is $INB_{all}=\$8,119$, which of course removes the \$100 cost of doing the marker, which is the BRCAPRO risk model.  For Ashkenazi-Jews, INB is maximixed where everyone gets genetic testing for BRCA mutations, regardless of BRCAPRO risk score.
+
+If we halve the dollar value of each life-year gained from \$100,000 to \$50,000, then the optimal risk-threshold doubles to $\pi_{INB}=0.50\%$.  For the general-population, the $INB>0$ for risk threshlds from 0.17\%-1.87\% and the peak is indeed roughly at 0.50\% (INB=\$33.94, barely positive).  For Ashkenazi-Jews, the interior peak is at 0.50\%, but testing everyone still has a slightly higher INB.  
+
+If we further halve the dollar value of each life-year gained to \$25,000, then the optimal risk-threshold doubles to $\pi_{INB}=0.99\%$.  For the general-population, all $INB<0$, the least bad INB is for testing no one (this is a case where we can only minimize harm, there are no good options).  For Ashkenazi-Jews, $INB>0$ for risk-thresholds of 0\%-5\%, and the peak is around 0.99\% (INB=\$1,235), although numerically 0.54\% has best INB=\$1,400.
+
+
+\section{Statistical Inference for INB}
+
+Consider a random sample of individuals with both marker ($M$) values and disease status ($D$) available, and let $n$ denote the sample size. Then, given a cutoff marker value $m_0$, the quantities $P(D+,M+)$ and $P(M+)$ can be obtained as the sample proportions of the individuals with positive marker and disease present (denoted by $\hat{P}(D+,M+)$), and positive marker (denoted by $\hat{P}(M+)$), respectively. Moreover, the joint distribution of these sample proportions is asymptotically bivariate normal,
+\begin{equation}\label{sample_proportions}
+\left(\hat{P}(D+,M+),\hat{P}(M+) \right)' \sim N\left(\left({P}(D+,M+),{P}(M+) \right)', \Sigma/n \right)\,,
+\end{equation}
+where $\Sigma_{11}= {P}(D+,M+)[1-{P}(D+,M+)]$, $\Sigma_{22}= {P}(M+)[1-{P}(M+)]$, and $\Sigma_{12}= {P}(D+,M+)\cdot{P}(M+)$.\\
+It follows that $\widehat{INB}$, the sample estimate of INB obtained by replacing ${P}(D+,M+)$ and ${P}(M+)$ by their sample estimates, is asymptotically normally distributed with mean INB and variance 
+\begin{equation}\label{sigma_INB}
+\sigma^2_{INB} = A^2\cdot \Sigma_{11}/n + B^2\cdot \Sigma_{22}/n - 2\cdot A\cdot B \cdot \Sigma_{12}/n \,.
+\end{equation} 
+The results are presented in Figure 2 for Ashkenazi-Jewish population. %\textcolor{blue} {\it Hormuzd, INB in Figure 3 looks a little different than in your Figure 2, not sure whether I got the variables right... Also, I didn't know the sample size for the sample from the general population (I used $n=4589$ for AJ) so couldn't plot for the general population.}
+<<INB inference>>=
+get_INB_CIs = function(dataa,E,C,n)
+{
+   probDplusMplus <- dataa$MRS/2 + dataa$OverallPtest*dataa$BRCAprev
+   probMplus = dataa$OverallPtest
+   AA = (E[2]-E[3]) - (C[3]-C[4]-C[2]) 
+   BB = C[2]
+   CC = C[1]
+   INB_var = (AA^2*probDplusMplus*(1-probDplusMplus) + BB^2*probMplus*(1-probMplus) -2*AA*BB*probDplusMplus*probMplus)/n
+   INB_est = INB(E,C,probDplusMplus,probMplus)[,3]
+
+   LL = INB_est - 1.96*sqrt(INB_var) 
+   UL = INB_est + 1.96*sqrt(INB_var) 
+   data.frame(Threshold=dataa$Threshold,INB_est=INB_est,INB_LL = LL, INB_UL=UL)
+}
+
+AJ_INB_CIs = get_INB_CIs(brca,E,C,n=4589)
+@
+
+\begin{figure}
+\begin{center}
+<<label=fig3,fig=TRUE,echo=FALSE>>=
+plot(AJ_INB_CIs$Threshold,AJ_INB_CIs$INB_est,type="l",xlab="Threshold",ylab="INB")
+lines(AJ_INB_CIs$Threshold,AJ_INB_CIs$INB_LL,lty=2)
+lines(AJ_INB_CIs$Threshold,AJ_INB_CIs$INB_UL,lty=2)
+@
+\end{center}
+\label{fig:three}
+\caption{INB (solid line) with 95\% confidence intervals (dashed lines) for Ashkenazi-Jews.}
+\end{figure}
+
+
+Notice that a model-based estimator can be obtained as well by employing the joint model for $M$ and $D$ described in (\ref{expressions}), and statistical inference can be based on the asymptotic normality of the MLE.
+
+
+
+
+
+
+
+\section{Conditions for a marker to have greater INB than another marker}
+
+If one marker has greater sensitivity but less test positivity (or greater specificity yet more test positivity), then it is obviously that the marker is better, no cost-effectivenss analysis is needed.  However, there is usually a tradeoff, one test having better sensitivity but not specificity.  The tradeoff should be evaluated based on INB.
+
+For two markers with the same marker cost, then $\Delta INB=INB_1-INB_2>0$ if
+\begin{eqnarray*}
+\Delta INB &=& (e+c_0)[P(D+,M_1+)-P(D+,M_2+)] - c_0[P(M_1+)-P(M_2+)]\\
+           &=& (e+c_0)[Sens_1-Sens_2]\pi - c_0[p_1-p_2] > 0
+\end{eqnarray*}
+for disease prevalence $P(D+)=\pi$ and test-positivities $p_1,p_2$.  Presuming $p_1>p_2$,
+\begin{eqnarray}
+\frac{Sens_1-Sens_2}{p_1-p_2} &>& \frac{c_0/[e+c_0]}{\pi} = \frac{\pi_{INB}}{\pi},
+\end{eqnarray}
+A usable test requires that the ratio of the the sensitivity gain to the increase in marker positivity is less than a constant.  This constant is the ratio of the optimal risk threshold to the disease prevalence, which is the optimal threshold under information metrics such as Youden's index, AUC, MRS, and Net Benefit, none of which specify costs and effectiveness.  Thus the key is the ratio of optimal risk thresholds by considering costs/effectiveness versus ignoring them.
+
+This inequality presumes that $p_1>p_2$, but if the opposite were true, then if the sensitivity gain is also negative (usually true), then the negative signs cancel (and if the sensitivity gain were positive, then marker 1 is obviously the better marker).  
+
+Note that if $\pi_{INB}=\pi$, then increases in sensitivity and test-positivity are weighed equally.  If $\pi_{INB}<\pi$ which means we should be testing more people, then we will accept smaller sensitivity gain for larger test-positivity increase.  But if $\pi_{INB}>\pi$, meaning we should be testing fewer people, then we require a greater sensitivity gain than a test-positivity increase.  
+
+The above inequality can be equivalently written in terms of specificity: the new marker can have less sensitivity, if the decrease in test positivity is sufficient (the numerator and denominator are both negative).  In this situation, then the new marker has better specificity rather than sensitivity.  To see this clearly, we write the above condition in terms of specificity by noting that $P(D+,M+)=P(M+)-P(D-,M+)=p-cSpec\cdot(1-\pi)$ (denoting $cSpec=1-Spec$):
+\begin{eqnarray*}
+\Delta INB &=& (e+c_0)[p_1-cSpec_1\cdot(1-\pi) - p_2+cSpec_2\cdot(1-\pi)] - c_0[p_1-p_2]\\
+           &=& e[p_1-p_2] +  (e+c_0)(1-\pi)[cSpec_2-cSpec_1]\\
+           &=& e[(1-p_2)-(1-p_1)] + (e+c_0)(1-\pi)[Spec_1-Spec_2] >0
+\end{eqnarray*}
+and presuming $1-p_1>1-p_2$ (so that the sign flips in the inequality),
+\begin{eqnarray*}
+\frac{Spec_1-Spec_2}{(1-p_1)-(1-p_2)} &>& \frac{e/[e+c_0]}{1-\pi} = \frac{1-\pi_{INB}}{1-\pi}.
+\end{eqnarray*}
+The two inequalities are equivalent, either can be used.  
+
+% Although this inequality admits a rare disese approximation:
+% \begin{eqnarray*}
+% \frac{Spec_1-Spec_2}{(1-p_1)-(1-p_2)} &>\approx& 1-\pi_{INB},
+% \end{eqnarray*}
+% if you also use the rare-disese approximation of approximating test-positivity as complement of specificity, it is useless.
+
+Note that these inequalities do not assume that the two markers are dichotomized at the optimal risk threshold of $\pi_{INB}$. In reality, the two markers need not be dichotmized at the optimal threshold, or even at the same threshold.  For example, the Pap and HPV tests are implicitly categorized at different thresholds, neither of which is necessarily optimal.  However, this leaves open the question that the comparison is unfair, much less suboptimal.  If the two markers are dichotomized at the same risk-threshold, it's a most fair comparison, and if the risk threshold is also $\pi_{INB}$, then the comparison is definitive.
+
+To account for unequal marker test costs, $\Delta INB=INB_1-INB_2>0$ if
+\begin{eqnarray*}
+\Delta INB &=& (e+c_0)[P(D+,M_1+)-P(D+,M_2+)] - c_0[P(M_1+)-P(M_2+)] - [c_{m1}-c_{m2}]\\
+           &=& (e+c_0)[Sens_1-Sens_2]\pi > c_0[p_1-p_2] + [c_{m1}-c_{m2}]\\
+           &=& [Sens_1-Sens_2]\pi/\pi_{INB} > [p_1-p_2] + [c_{m1}-c_{m2}]/c_0
+\end{eqnarray*}
+for disease prevalence $P(D+)=\pi$ and test-positivities $p_1,p_2$.  The required condition is
+\begin{eqnarray}
+  [Sens_1-Sens_2]  &>& \frac{\pi_{INB}}{\pi} \left( [p_1-p_2] + \frac{c_{m1}-c_{m2}}{c_0} \right) \\.
+\end{eqnarray}
+If marker test costs are equal, the right size is zero, and this reduces to the earlier simple condition. Here the right side is the ratio of the increase in marker test cost to the definitive test cost.  For a marker 1 with better sensitivity and smaller test positivity, in the case of equal costs or a costless marker is a no-brainer better marker.  But this is not necessarily true if the increase in marker cost compared to definite test cost is very high.  
+
+% The equivalent condition in terms of MRS is:
+% \begin{eqnarray*}
+% \Delta INB &=& [MRS_1-MRS_2](e+c_0)/2 - [p_1-p_2][c_0-\pi(e+c_0)] >0
+% \end{eqnarray*}
+% or 
+% \begin{eqnarray*}
+% \frac{MRS_1-MRS_2}{p_1-p_2} &>& 2\frac{c_0-\pi(e+c_0)}{e+c_0} = 2(\pi_{INB}-\pi).
+% \end{eqnarray*}
+% Note that this presumes that $p_1>p_2$, reverse the inequality otherwise.  It's interesting that the condition depends on the difference of optimal INB risk threshold versus optimal MRS threshold.  This means that, if $p_1>p_2$, marker 1 can have worse MRS yet better INB, but the optimal INB threshold must be less than prevalence (meaning, you should be testing more people anyway), and the MRS is not too much worse.  Thus, a marker 1 with worse MRS for $p_1>p_2$ for $\pi_{INB}>\pi$, where you should be testing fewer people, can never be better.  The equivalent expression via Youden's index J (via $MRS=2J\pi(1-\pi$)) is
+% \begin{eqnarray*}
+% \frac{J_1-J_2}{p_1-p_2} &>& \frac{\pi_{INB}-\pi}{\pi(1-\pi)}.
+% \end{eqnarray*}
+% This is all interesting, but complex to explain, and provides no extra insight versus the conditions based on sensitivity and specificity.
+
+ 
+
+% \section{Minimum MRS needed for a biomarker to be better than testing no one or testing everyone}
+% 
+% How much MRS do we need to ensure that using the marker is better than testing no one or testing everyone?  This would set the minimum MRS necessary, and give scientists an objective MRS goal to shoot for when designing new biomarker tests.  Let's presume $MRS>0$ and $e>0$, else we never screen.  
+% 
+% I've commented out some work below because I need to think about it more, and I just want to send you what I have right now.
+
+
+
+
+\subsection{Sensitivity Analyses}
+
+\subsubsection{With respect to input parameters}
+
+It is common in cost-effectiveness to see how sensitive the results are (i.e., INB herein) with respect to changes in input parameters. The input parameters are the cost (i.e., $c_0$, $c_1$, $c_2$ and $c_m$)and the effectiveness (i.e., $e_1$ and $e_2$) parameters. Since INB is linear in these parameters and $P(D+,M+)$ and $P(M+)$ are assumed fixed, it is straightforward to assess the sensitivity of the results (e.g., assuming these cost and effectiveness input parameters are normally distributed yields a normally distributed INB).
+
+\subsubsection{With respect to the risk-model}
+
+\textcolor{blue}{\it Now that I look at it in this way, the model in Section 3 could be thought of as allowing for error in the risk-model (still unbiased, but with some random error), hence it is a sensitivity analysis. Could you please provide density plots for the risk marker $M$ in AJ and the general population? Separately, we want to see whether we could employ some parametric model.}
+
+% \subsection{INB for testing no one or testing everyone}
+% 
+% Note $pi_{INB}$ finds the interior maximum for $INB(m_0)$.  The boundaries of testing no one and testing everyone have to be compared to $INB(\pi_{INB})$ to see which is greatest. If we test no one, then $INB=0$.  If we test everyone, we can set $c_m=0$ since we don't need the marker, and
+% \begin{eqnarray*}
+%   INB_{all} &=& [(e_1-e_2)-(c_1-c_2-c_0)]\pi - c_0\\
+%             &=& [e+c_0]\pi - c_0, 
+% \end{eqnarray*}
+% and thus we have an intuitive form for INB:
+% \begin{eqnarray*}
+%   INB &=& (e+c_0)MRS/2 - c_m + p[e\pi + c_0\pi - c_0] \\
+%       &=& (e+c_0)MRS/2 - c_m + pINB_{all}.
+% \end{eqnarray*}
+% 
+% \subsection{Minimum MRS, and maximum marker cost, for using marker to beat testing no one}
+% 
+% For beating testing no one (INB=0), set the INB equation above to be greater than zero and solve for MRS:
+% \begin{eqnarray*}
+%   MRS &>& 2\frac{c_m-pINB_{all}}{e+c_0}
+% \end{eqnarray*}
+% The right side is maximized if $p=0$.  Thus the minimum MRS for the biomarker to beat testing no one is
+% \begin{eqnarray*}
+%   MRS_{min} &=& 2\frac{c_m}{e+c_0}.
+% \end{eqnarray*}
+% Marker cost is key for setting this minimum MRS, which only depends on utilities.  Recall that the maximum MRS for a disease is $2\pi(1-\pi)$.  This also sets a maximum marker cost, beyond which it is not cost-effective to use even a perfect test:
+% \begin{eqnarray*}
+%   c_m &\le& \pi(1-\pi)(e+c_0)
+% \end{eqnarray*}
+% 
+% \subsection{Minimum MRS, and maximum marker cost, for using marker to beat testing everyone}
+% 
+% For beating testing everyone ($INB=INB_{all}$), set the INB equation above to be greater than $INB_{all}$ and solve for MRS:
+% \begin{eqnarray*}
+%   MRS &>& 2\frac{c_m+(1-p)INB_{all}}{e+c_0}
+% \end{eqnarray*}
+% For the biomarker to beat testing everyone,
+
+
+
+
+
+
+\appendix 
+\section*{Appendix}
+\label{Appendix}
+
+\section*{Incremental Cost Effectiveness Ratio (ICER)}
+\label{sec:ICER}
+
+Cost-effectiveness is usually measured by the ICER:
+\begin{eqnarray} 
+ ICER &=& \frac{\Delta C}{\Delta E}\\ \nonumber
+      &=& \frac{c_1-c_2-c_0}{e_1-e_2} + \frac{c_0}{(e_1-e_2)\cdot PPV} + \frac{c_m}{(e_1-e_2)P(D+,M+)}\\ \nonumber
+      &=& \frac{1}{e_1-e_2}\left[ (c_1-c_2-c_0) + \frac{1}{PPV} \left( c_0 + \frac{c_m}{P(M+)} \right) \right]. \label{eq:ICER}
+\end{eqnarray}
+The advantage of ICER is that you only need to specify the ratio of the 3 cost functions ($c_m$, $c_0$, and $(c_1-c_2-c_0)$) to the life-years gained $(e_1-e_2)$.  However, I don't know how to specify these ratios without specifying the costs and effectiveness separately.  Furthermore, a large ICER can mask a small difference, and vice-versa.  For these reasons, the Incremental Net Benefit (INB) is more useful.
+
+\section*{Bounds on net effectiveness so that screening is better than screening no one or testing everyone}
+\label{sec:BoundsOnNetEffectiveness}
+
+For screening to be cost-effective versus screening no one, then $INB>0$, which happens only if
+\begin{eqnarray*}
+  e &>& \frac{c_m+c_0P(M+)}{P(D+,M+)} - c_0 = \frac{1}{PPV}\left[\frac{c_m}{P(M+)}+c_0(1-PPV)\right]. 
+\end{eqnarray*}
+The minimal net effectiveness is zero only if the marker cost $c_m$ and definitive test cost $c_0$ are zero, else is a positive number.  The minimal net effectiveness required increases with screening-positivity, but decreases with PPV.  If the screening test were free so $c_m=0$ (e.g the screening test were a risk-model based on easily elicited risk factors), then only PPV matters.  This expression holds for any threshold, including the optimal $\pi_{INB}$.
+
+For screening to be better than testing everyone, we need $INB>(e+c_0)P(D+)-c_0$:
+\begin{eqnarray*}
+  0 &<& [e+c_0]P(D+,M+) - c_m - c_0P(M+) - [(e+c_0)P(D+)-c_0] \\
+  0 &<&-[e+c_0]P(D+,M-) - c_m + c_0P(M-) \\
+  e &<& \frac{c_0P(M-)-c_m}{P(D+,M-)} - c_0 = \frac{1}{1-NPV}\left[c_0\cdot NPV - \frac{c_m}{P(M-)}\right]. 
+\end{eqnarray*}
+Note that this is an upper-bound on net effectiveness $e$.  What this means is, if early treatment is too cheap and effective, then just test everyone.
+
+Thus for screening to be better than screening no one or testing everyone, the net effectiveness must be bounded:
+\begin{eqnarray*}
+  \frac{1}{PPV}\left[\frac{c_m}{P(M+)}+c_0(1-PPV)\right] < e < \frac{1}{1-NPV}\left[c_0\cdot NPV - \frac{c_m}{P(M-)}\right]. 
+\end{eqnarray*}
+
+\section*{When is INB proportional to MRS, so they have the same maximum?}
+\label{sec:INBandMRS}
+
+Define $p=P(M+)$ and $\pi=P(D+)$.  Recall that $P(D+,M+) = MRS/2 +p\pi$.  Define the net effectiveness of early intervention: $e = (e_1-e_2)-(c_1-c_2)$.  Then
+\begin{eqnarray*}
+  INB &=& (e+c_0)[MRS/2 + p\pi] - c_m - c_0p \\
+      &=& (e+c_0)MRS/2 - c_m + p[e\pi + c_0\pi - c_0] \\
+      &=& (e+c_0)MRS/2 - c_m + p[e\pi - c_0(1-\pi)].
+\end{eqnarray*}
+Note that $INB\propto MRS$ if $e\pi - c_0(1-\pi)=0$, which happens when
+\begin{eqnarray*}
+  \frac{\pi}{1-\pi} &=& \frac{c_0}{e} = \frac{c_0}{(e_1-e_2)-(c_1-c_2)},~~or~~\pi_{INB}=\frac{c_0}{c_0+e}.
+\end{eqnarray*}
+INB and MRS will have the same maximum if the odds of disease equals the ratio of confirmatory test cost to the net effectiveness of early intervention.  Let us call this critical prevalence $\pi_{INB}$ to indicate that this is the disease prevalence where MRS and INB yield the same optimal threshold.  In Figure 1, $c_0/e = \$1,000/(\$400,000-\$0) = 0.25\%$, and thus the critical prevalence is $\pi_{INB}=0.25\%$.  For the general population, $\pi=0.26\%$, which is very close to the critical prevalence.  
+
+There is no reason for the confirmatory test cost and net effectiveness to balance in a way that their ratio equals the prevalence odds.  However, it is useful to calculate the critical prevalence and compare to the observed disease prevalence, to qualitatively understand which way the threshold for maximum MRS changes when costs and effectiveness are accounted for.  For example, for Ashkenazi-Jews, the prevalence is much higher than the critical prevalence ($2.5\% > 0.25\%$).  Thus immediately you know that the optimal threshold will decrease from prevalence towards testing more women than MRS would indicate.  
+
+
+\section*{Deriving the optimal risk threshold from }
+\label{sec:INBandMRS}
+
+The optimal risk threshold can be derived from the classical expected utility approach (see\cite{Baker2009a} for a comprehensive review).  Calculating expected utility requires specifying the utility for the 4 possible outcomes: the utility of true positive prediction $U_{TP}$, the utility of true negative prediction $U_{TN}$, the utility of false positive prediction $U_{FP}$, and the utility of false negative prediction $U_{FN}$.  The cost of marker $M$ is $U_{Test}$.  
+
+The marker/model is dichotomized at risk threshold $R$: $P(D+|M=m_0)=R$.  The $R$ that maximizes expected utility is determined by the ratio of benefit ($B=U_{TP}-U_{FN}$) to costs ($C=U_{TN}-U_{FP}$), which is $R=1/(1+B/C)$\cite{Pauker1980}.  This is the basis for recent developments in risk prediction metrics, such as Net Benefit.  
+
+In current approaches, the utilities are left unspecified and all possible risk thresholds are considered as a sensitivity analysis.
+
+\section*{Next Steps}
+\begin{enumerate}
+  \item Do this for IFNL4 genotype
+  \item Extend to screen-and-treat program for precursors, application to cervical screen-and-treat
+  \item Extend to also having entry criteria for screening and jointly optimize threshold for entry and threshold for screening test
+  \item Extend to allowing a triage test for the primary screen, jointly optimize both thresholds 
+  \item Extend to multiple screens over time
+\end{enumerate}
+\end{document}
+
+
+\begin{thebibliography}{99}
+
+\bibitem{katki}
+Katki, H.A.. Novel decision-theoretic and risk-stratification metrics of predictive performance: Application to deciding who should undergo genetic testing.  arXiv:1711.05686v1 [stat.ME].
+
+\bibitem{mai}
+Mai PL, Chatterjee N, Hartge P, Tucker M, Brody L, Struewing JP, Wacholder S.  Potential excess mortality in BRCA1/2 mutation carriers beyond breast, ovarian, prostate, and pancreatic cancers, and melanoma.  PLoS One. 2009;4(3):e4812.
+
+	\bibitem[\protect\citeauthoryear{Antoniou, Pharoah, Smith, and Easton}{Antoniou
+		et~al.}{2004}]{Antoniou2004}
+	Antoniou, A., P.~P.~D. Pharoah, P.~Smith, and D.~Easton (2004, Oct).
+	\newblock The {BOADICEA} model of genetic susceptibility to breast and ovarian
+	cancer.
+	\newblock {\em Br J Cancer\/}~{\em 91\/}(8), 1580--90.
+	
+	\bibitem[\protect\citeauthoryear{Baker, Cook, Vickers, and Kramer}{Baker
+		et~al.}{2009}]{Baker2009a}
+	Baker, S.~G., N.~R. Cook, A.~Vickers, and B.~S. Kramer (2009, October).
+	\newblock Using relative utility curves to evaluate risk prediction.
+	\newblock {\em Journal of the Royal Statistical Society. Series A, (Statistics
+		in Society)\/}~{\em 172}, 729--748.
+	
+	\bibitem[\protect\citeauthoryear{Best, Tucker, Frone, Greene, Peters, and
+		Katki}{Best et~al.}{2017}]{Best2017}
+	Best, A.~F., M.~A. Tucker, M.~N. Frone, M.~H. Greene, J.~A. Peters, and H.~A.
+	Katki (2017).
+	\newblock To test or not to test: {S}election criteria for population-based
+	{BRCA1/2} mutation screening.
+	\newblock {\em Submitted\/}.
+	
+	\bibitem[\protect\citeauthoryear{Bura and Gastwirth}{Bura and
+		Gastwirth}{2001}]{bura2001binary}
+	Bura, E. and J.~L. Gastwirth (2001).
+	\newblock The binary regression quantile plot: Assessing the importance of
+	predictors in binary regression visually.
+	\newblock {\em Biometrical Journal\/}~{\em 43\/}(1), 5--21.
+	
+	\bibitem[\protect\citeauthoryear{Cantor and Kattan}{Cantor and
+		Kattan}{2000}]{Cantor2000}
+	Cantor, S.~B. and M.~W. Kattan (2000).
+	\newblock Determining the area under the {ROC} curve for a binary diagnostic
+	test.
+	\newblock {\em Med Decis Making\/}~{\em 20\/}(4), 468--470.
+	
+	\bibitem[\protect\citeauthoryear{Cook}{Cook}{2007}]{Cook2007}
+	Cook, N.~R. (2007, Feb).
+	\newblock Use and misuse of the receiver operating characteristic curve in risk
+	prediction.
+	\newblock {\em Circulation\/}~{\em 115\/}(7), 928--935.
+	
+	\bibitem[\protect\citeauthoryear{Copas}{Copas}{1999}]{Copas1999}
+	Copas, J. (1999).
+	\newblock The effectiveness of risk scores: The logit rank plot.
+	\newblock {\em Journal of the Royal Statistical Society. Series C (Applied
+		Statistics)\/}~{\em 48\/}(2), 165--183.
+	
+	\bibitem[\protect\citeauthoryear{Gail and Pfeiffer}{Gail and
+		Pfeiffer}{2005}]{Gail2005}
+	Gail, M.~H. and R.~M. Pfeiffer (2005, April).
+	\newblock On criteria for evaluating models of absolute risk.
+	\newblock {\em Biostatistics (Oxford, England)\/}~{\em 6}, 227--239.
+	
+	\bibitem[\protect\citeauthoryear{Greenhouse, Cornfield, and
+		Homburger}{Greenhouse et~al.}{1950}]{GREENHOUSE1950}
+	Greenhouse, S.~W., J.~Cornfield, and F.~Homburger (1950, Nov).
+	\newblock The {Y}ouden index: letters to the editor.
+	\newblock {\em Cancer\/}~{\em 3\/}(6), 1097--1101.
+	
+	\bibitem[\protect\citeauthoryear{Hanley and McNeil}{Hanley and
+		McNeil}{1982}]{Hanley1982}
+	Hanley, J.~A. and B.~J. McNeil (1982, April).
+	\newblock The meaning and use of the area under a receiver operating
+	characteristic ({ROC}) curve.
+	\newblock {\em Radiology\/}~{\em 143}, 29--36.
+	
+	\bibitem[\protect\citeauthoryear{Hilden}{Hilden}{1991}]{Hilden1991}
+	Hilden, J. (1991).
+	\newblock The area under the {ROC} curve and its competitors.
+	\newblock {\em Medical Decis Making\/}~{\em 11}, 95--101.
+	
+	\bibitem[\protect\citeauthoryear{Huang, Sullivan~Pepe, and Feng}{Huang
+		et~al.}{2007}]{Huang2007}
+	Huang, Y., M.~Sullivan~Pepe, and Z.~Feng (2007).
+	\newblock Evaluating the predictiveness of a continuous marker.
+	\newblock {\em Biometrics\/}~{\em 63\/}(4), 1181--1188.
+	
+	\bibitem[\protect\citeauthoryear{Katki}{Katki}{2006}]{Katki2005}
+	Katki, H.~A. (2006, June).
+	\newblock Effect of misreported family history on {M}endelian mutation
+	prediction models.
+	\newblock {\em Biometrics\/}~{\em 62\/}(2), 478--487.
+	
+	\bibitem[\protect\citeauthoryear{King, Levy-Lahad, and Lahad}{King
+		et~al.}{2014}]{King2014}
+	King, M.-C., E.~Levy-Lahad, and A.~Lahad (2014, September).
+	\newblock Population-based screening for {BRCA1} and {BRCA2}: 2014 {L}asker
+	{A}ward.
+	\newblock {\em JAMA\/}~{\em 312}, 1091--1092.
+	
+	\bibitem[\protect\citeauthoryear{Kraemer}{Kraemer}{1992}]{Krae:eval:1992}
+	Kraemer, H.~C. (1992).
+	\newblock {\em Evaluating Medical Tests: Objective and Quantitative
+		Guidelines}.
+	\newblock Newbury Park, {CA}: Sage Publications Inc.
+	
+	\bibitem[\protect\citeauthoryear{Kraemer}{Kraemer}{2004}]{Kraemer2004}
+	Kraemer, H.~C. (2004, Jan).
+	\newblock Reconsidering the odds ratio as a measure of 2x2 association in a
+	population.
+	\newblock {\em Stat Med\/}~{\em 23\/}(2), 257--270.
+	
+	\bibitem[\protect\citeauthoryear{Kuchenbaecker, Hopper, Barnes, Phillips,
+		Mooij, Roos-Blom, Jervis, van Leeuwen, Milne, Andrieu, Goldgar, Terry,
+		Rookus, Easton, Antoniou, BRCA1, Consortium, McGuffog, Evans, Barrowdale,
+		Frost, Adlard, Ong, Izatt, Tischkowitz, Eeles, Davidson, Hodgson, Ellis,
+		Nogues, Lasset, Stoppa-Lyonnet, Fricker, Faivre, Berthet, Hooning, van~der
+		Kolk, Kets, Adank, John, Chung, Andrulis, Southey, Daly, Buys, Osorio, Engel,
+		Kast, Schmutzler, Caldes, Jakubowska, Simard, Friedlander, McLachlan,
+		Machackova, Foretova, Tan, Singer, Olah, Gerdes, Arver, and
+		Olsson}{Kuchenbaecker et~al.}{2017}]{Kuchenbaecker2017}
+	Kuchenbaecker, K.~B., J.~L. Hopper, D.~R. Barnes, et~al. (2017, June).
+	\newblock Risks of breast, ovarian, and contralateral breast cancer for {BRCA1}
+	and {BRCA2} mutation carriers.
+	\newblock {\em JAMA\/}~{\em 317}, 2402--2416.
+	
+	\bibitem[\protect\citeauthoryear{Lachin}{Lachin}{2000}]{Lac00}
+	Lachin, J.~M. (2000).
+	\newblock {\em Biostatistical Methods: The Assessment of Relative Risks}.
+	\newblock New York: Wiley-Interscience.
+	
+	\bibitem[\protect\citeauthoryear{Moyer}{Moyer}{2014}]{Moyer2014}
+	Moyer, V.~A. (2014, February).
+	\newblock Risk assessment, genetic counseling, and genetic testing for
+	{BRCA}-related cancer in women: {U.S.} {P}reventive {S}ervices {T}ask {F}orce
+	recommendation statement.
+	\newblock {\em Ann Int Med\/}~{\em 160}, 271--281.
+	
+	\bibitem[\protect\citeauthoryear{NICE}{NICE}{2017}]{NICE2017}
+	NICE (2017).
+	\newblock Familial breast cancer: classification, care and managing breast
+	cancer and related risks in people with a family history of breast cancer,
+	recommendation 1.5.11.
+	\newblock Technical report, {National Institute for Health and Care Excellence}
+	Clinical Guidance
+	{https://www.nice.org.uk/guidance/cg164/chapter/Recommendations\#genetic-testing}.
+	
+	\bibitem[\protect\citeauthoryear{Parmigiani, Berry, and Aguilar}{Parmigiani
+		et~al.}{1998}]{Parmigiani1998}
+	Parmigiani, G., D.~Berry, and O.~Aguilar (1998, Jan).
+	\newblock Determining carrier probabilities for breast cancer-susceptibility
+	genes {BRCA}1 and {BRCA}2.
+	\newblock {\em Am J Hum Genet\/}~{\em 62\/}(1), 145--158.
+	
+	\bibitem[\protect\citeauthoryear{Pauker and Kassirer}{Pauker and
+		Kassirer}{1980}]{Pauker1980}
+	Pauker, S.~G. and J.~P. Kassirer (1980, May).
+	\newblock The threshold approach to clinical decision making.
+	\newblock {\em N Engl J Med\/}~{\em 302\/}(20), 1109--1117.
+	
+	\bibitem[\protect\citeauthoryear{Pencina, D'Agostino, D'Agostino, and
+		Vasan}{Pencina et~al.}{2008}]{Pencina2008}
+	Pencina, M.~J., R.~B. D'Agostino, R.~B. D'Agostino, and R.~S. Vasan (2008,
+	Jan).
+	\newblock Evaluating the added predictive ability of a new marker: from area
+	under the {ROC} curve to reclassification and beyond.
+	\newblock {\em Stat Med\/}~{\em 27\/}(2), 157--72; discussion 207--12.
+	
+	\bibitem[\protect\citeauthoryear{Pepe, Janes, Longton, Leisenring, and
+		Newcomb}{Pepe et~al.}{2004}]{Pepe2004}
+	Pepe, M.~S., H.~Janes, G.~Longton, W.~Leisenring, and P.~Newcomb (2004, May).
+	\newblock Limitations of the odds ratio in gauging the performance of a
+	diagnostic, prognostic, or screening marker.
+	\newblock {\em Am J Epidemiol\/}~{\em 159\/}(9), 882--890.
+	
+	\bibitem[\protect\citeauthoryear{Rizk}{Rizk}{2017}]{GenomeWeb2017}
+	Rizk, C. (2017).
+	\newblock Researchers debate merits of population-wide genetic testing at
+	{AACR}.
+	\newblock Technical report, {GenomeWeb}
+	{https://www.genomeweb.com/genetic-research/researchers-debate-merits-population-wide-genetic-testing-aacr}.
+	
+	\bibitem[\protect\citeauthoryear{{Staff Reporter}}{{Staff
+			Reporter}}{2017}]{GenomeWeb2017a}
+	{Staff Reporter} (2017).
+	\newblock {V}eritas {G}enetics to provide {BRCA} testing for {C}anadian
+	hereditary cancer screening effort.
+	\newblock Technical report, {GenomeWeb}
+	{https://www.genomeweb.com/clinical-sequencing/veritas-genetics-provide-brca-testing-canadian-hereditary-cancer-screening}.
+	
+	\bibitem[\protect\citeauthoryear{Struewing, Hartge, Wacholder, Baker, Berlin,
+		McAdams, Timmerman, Brody, and Tucker}{Struewing
+		et~al.}{1997}]{STRUEWING1997}
+	Struewing, J.~P., P.~Hartge, S.~Wacholder, S.~M. Baker, M.~Berlin, M.~McAdams,
+	M.~M. Timmerman, L.~C. Brody, and M.~A. Tucker (1997).
+	\newblock The risk of cancer associated with specific mutations of {BRCA1} and
+	{BRCA2} among {A}shkenazi {J}ews.
+	\newblock {\em N. Engl. J. Med.\/}~{\em 336}, 1401--1408.
+	
+	\bibitem[\protect\citeauthoryear{Sweeting and Thompson}{Sweeting and
+		Thompson}{2012}]{Sweeting2012}
+	Sweeting, M.~J. and S.~G. Thompson (2012, Apr).
+	\newblock Making predictions from complex longitudinal data, with application
+	to planning monitoring intervals in a national screening programme.
+	\newblock {\em J R Stat Soc Ser A Stat Soc\/}~{\em 175\/}(2), 569--586.
+	
+	\bibitem[\protect\citeauthoryear{Vickers and Elkin}{Vickers and
+		Elkin}{2006}]{Vickers2006}
+	Vickers, A.~J. and E.~B. Elkin (2006).
+	\newblock Decision curve analysis: a novel method for evaluating prediction
+	models.
+	\newblock {\em Med Decis Making\/}~{\em 26}, 565--574.
+	
+	\bibitem[\protect\citeauthoryear{Wentzensen and Wacholder}{Wentzensen and
+		Wacholder}{2013}]{Wentzensen2013}
+	Wentzensen, N. and S.~Wacholder (2013, Feb).
+	\newblock From differences in means between cases and controls to risk
+	stratification: a business plan for biomarker development.
+	\newblock {\em Cancer Discov\/}~{\em 3\/}(2), 148--157.
+	
+	\bibitem[\protect\citeauthoryear{Youden}{Youden}{1950}]{YOUDEN1950}
+	Youden, W.~J. (1950, Jan).
+	\newblock Index for rating diagnostic tests.
+	\newblock {\em Cancer\/}~{\em 3\/}(1), 32--35.
+
+\end{thebibliography}
+
+
+\end{document}
+
+setwd("E://Staff/Ionut Bebu/METHODS/Optimal_Screening/Screening_Hormuzd/ANALYSIS")
+%setwd("/Users/katkih/hkCurrent/Dropbox/RiskStratification/MRS/BRCA/code")
+
+Sweave("Screening_biomarker.rnw",syntax="SweaveSyntaxNoweb")
+
+
+

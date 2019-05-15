@@ -1,0 +1,28 @@
+\BOOKMARK [1][]{section.1}{1 Introduction}{}% 1
+\BOOKMARK [1][]{section.2}{2 A cost-effectiveness framework for a single-time screen}{}% 2
+\BOOKMARK [2][]{subsection.2.1}{2.1 Defining average costs and effectiveness for a single-time screen}{section.2}% 3
+\BOOKMARK [2][]{subsection.2.2}{2.2 Calculating Incremental Net Benefit \(INB\)}{section.2}% 4
+\BOOKMARK [2][]{subsection.2.3}{2.3 Optimal cost-effective risk threshold that maximizes INB}{section.2}% 5
+\BOOKMARK [2][]{subsection.2.4}{2.4 Gain in INB versus screening no one or testing everyone}{section.2}% 6
+\BOOKMARK [3][]{subsubsection.2.4.1}{2.4.1 Comparison of INB to Net Benefit \(NB\)}{subsection.2.4}% 7
+\BOOKMARK [1][]{section.3}{3 Example: Who should undergo BRCA1/2 genetic testing?}{}% 8
+\BOOKMARK [2][]{subsection.3.1}{3.1 Background}{section.3}% 9
+\BOOKMARK [2][]{subsection.3.2}{3.2 Costs and effectiveness for BRCA1/2 mutation screening}{section.3}% 10
+\BOOKMARK [2][]{subsection.3.3}{3.3 BRCA1/2 mutation screening for Ashkenazi Jews}{section.3}% 11
+\BOOKMARK [3][]{subsubsection.3.3.1}{3.3.1 INB gain versus NB gain}{subsection.3.3}% 12
+\BOOKMARK [3][]{subsubsection.3.3.2}{3.3.2 Dollars per life-year gained implied by optimal risk-thresholds}{subsection.3.3}% 13
+\BOOKMARK [2][]{subsection.3.4}{3.4 BRCA1/2 mutation screening for the general population}{section.3}% 14
+\BOOKMARK [1][]{section.4}{4 Simple condition for a screening test to have greater INB}{}% 15
+\BOOKMARK [2][]{subsection.4.1}{4.1 Examples}{section.4}% 16
+\BOOKMARK [1][]{section.5}{5 Sensitivity Analyses}{}% 17
+\BOOKMARK [2][]{subsection.5.1}{5.1 Changing the effectiveness affects dollars per life-year gained, but not optimal risk thresholds}{section.5}% 18
+\BOOKMARK [2][]{subsection.5.2}{5.2 Cost of the definitive test}{section.5}% 19
+\BOOKMARK [2][]{subsection.5.3}{5.3 With respect to input parameters}{section.5}% 20
+\BOOKMARK [2][]{subsection.5.4}{5.4 With respect to the risk-model}{section.5}% 21
+\BOOKMARK [1][]{section.6}{6 Discussion}{}% 22
+\BOOKMARK [1][]{appendix.A}{A Appendix}{}% 23
+\BOOKMARK [2][]{subsection.A.1}{A.1 Screening is never cost-effective if net effectiveness e<0}{appendix.A}% 24
+\BOOKMARK [2][]{subsection.A.2}{A.2 Derivation of Net Benefit \(NB\) as INB standardized by benefit}{appendix.A}% 25
+\BOOKMARK [1][]{appendix.chX.1}{A Direct deriviation of the optimal cost-effective risk threshold }{}% 26
+\BOOKMARK [1][]{appendix.chX.2}{B Intervention costs for women with BRCA1/2 mutations}{}% 27
+\BOOKMARK [1][]{appendix.chX.3}{C Equivalent specificity condition for a test to have greater INB}{}% 28
